@@ -88,37 +88,6 @@ public class RestApiController {
     }
 
     /**
-     * Get a quote from quotable and make it available at our own API endpoint
-     *
-     * @return The quote json response
-     */
-    @GetMapping("/quote")
-    public Object getQuote() {
-        try {
-            String url = "https://api.quotable.io/random";
-            RestTemplate restTemplate = new RestTemplate();
-            ObjectMapper mapper = new ObjectMapper();
-
-            //We are expecting a String object as a response from the above API.
-            String jSonQuote = restTemplate.getForObject(url, String.class);
-            JsonNode root = mapper.readTree(jSonQuote);
-
-            //Parse out the most important info from the response and use it for whatever you want. In this case, just print.
-            String quoteAuthor = root.get("author").asText();
-            String quoteContent = root.get("content").asText();
-            System.out.println("Author: " + quoteAuthor);
-            System.out.println("Quote: " + quoteContent);
-
-            return root;
-
-        } catch (JsonProcessingException ex) {
-            Logger.getLogger(RestApiController.class.getName()).log(Level.SEVERE,
-                    null, ex);
-            return "error in /quote";
-        }
-    }
-
-    /**
      * Get a list of universities from hipolabs and make them available at our own API
      * endpoint.
      *
