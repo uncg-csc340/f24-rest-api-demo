@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -118,5 +120,40 @@ public class RestApiController {
             return "error in /univ";
         }
 
+    }
+
+    /**
+     * Get a list of 15 GSO breweries and make them available at our own API endpoint.
+     *
+     * @return a list of Breweries.
+     */
+    @GetMapping("/brew")
+    public Object getBreweries() {
+        try {
+            String url = "https://api.openbrewerydb.org/v1/breweries?by_city=greensboro";
+            RestTemplate restTemplate = new RestTemplate();
+            ObjectMapper mapper = new ObjectMapper();
+
+            String jsonListResponse = restTemplate.getForObject(url, String.class);
+            JsonNode root = mapper.readTree(jsonListResponse);
+
+            List<Brewery> breweryList = new ArrayList<>();
+
+            //The response from the above API is a JSON Array, which we loop through.
+            for (JsonNode rt : root) {
+                //Extract relevant info from the response and use it for what you want, in this case build a Brewery object
+                String name = rt.get("name").asText();
+                String address = rt.get("address_1").asText();
+                String type = rt.get("brewery_type").asText();
+
+                Brewery brewery = new Brewery(name, address, type);
+                breweryList.add(brewery);
+            }
+            return breweryList;
+        } catch (JsonProcessingException ex) {
+            Logger.getLogger(RestApiController.class.getName()).log(Level.SEVERE,
+                    null, ex);
+            return "error in /brew";
+        }
     }
 }
