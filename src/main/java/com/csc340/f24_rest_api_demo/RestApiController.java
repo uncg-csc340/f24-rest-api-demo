@@ -156,4 +156,51 @@ public class RestApiController {
             return "error in /brew";
         }
     }
+
+    /**
+     * Get info about a fruit from fruityVice.
+     *
+     * @param fruitName
+     * @return a Fruit object.
+     */
+    @GetMapping("/fruit")
+    public Object getFruit(@RequestParam(value = "name", defaultValue = "kiwi") String fruitName) {
+        try {
+            String url = "https://www.fruityvice.com/api/fruit/" + fruitName;
+            RestTemplate restTemplate = new RestTemplate();
+            ObjectMapper mapper = new ObjectMapper();
+
+            /**
+             * The response from the above API is a 'single' JSON object that looks like this:
+             * <pre>
+             *     {
+             *     "name": "Kiwi",
+             *     "id": 66,
+             *     "family": "Actinidiaceae",
+             *     "order": "Struthioniformes",
+             *     "genus": "Apteryx",
+             *     "nutritions": {
+             *         "calories": 61,
+             *         "fat": 0.5,
+             *         "sugar": 9.0,
+             *         "carbohydrates": 15.0,
+             *         "protein": 1.1
+             *     }
+             * }
+             * </pre>
+             * I know this because I TESTED THE FRUITYVICE API IN POSTMAN!!!
+             */
+            String jsonListResponse = restTemplate.getForObject(url, String.class);
+            JsonNode root = mapper.readTree(jsonListResponse);
+
+            //Extract relevant info from the response and use it for what you want, in this case build a Fruit object
+            Fruit fruit = new Fruit(root.get("name").asText(), root.get("family").asText(),
+                    root.get("nutritions").get("calories").asDouble());
+            return fruit;
+        } catch (JsonProcessingException ex) {
+            Logger.getLogger(RestApiController.class.getName()).log(Level.SEVERE,
+                    null, ex);
+            return "error in /fruit";
+        }
+    }
 }
