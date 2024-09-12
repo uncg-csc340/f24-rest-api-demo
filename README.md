@@ -11,5 +11,6 @@
   * http://localhost:8080/students/1 (GET)
   * http://localhost:8080/univ (GET)
   * http://localhost:8080/brew (GET)
+  * http://localhost:8080/fruit?name=strawberry (GET)
   * http://localhost:8080/students/create (POST, with Student JSON object in the request body.)
   * http://localhost:8080/students/delete/1 (DELETE, if you have POSTED more than one student.)
